@@ -1,69 +1,158 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- A-Frame aur MindAR libraries -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>AR Business Card</title>
+  
+  <!-- MindAR ki basic library (Bina A-Frame ke, pure CSS/JS layout ke liye) -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image.prod.js"></script>
+
+  <style>
+    /* Full screen setup, koi scrollbar nahi, koi blue color nahi */
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background-color: #000;
+    }
+
+    /* Camera view poori screen par rahega background mein */
+    #container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    /* Asli video jo card scan hone par screen ke beech mein dikhegi */
+    #card-video {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      display: none; /* Pehle chhupi rahegi, scan par hi dikhegi */
+      z-index: 5;
+    }
+
+    /* BUTTONS PANEL: Video se bilkul alag, screen ke sabse neeche fixed fixed position par */
+    .button-container {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 10; /* Sabse upar taaki touch hamesha kaam kare */
+    }
+
+    /* Premium Button Style */
+    .btn {
+      width: 100%;
+      padding: 14px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Har button ka apna alag color aur style */
+    .btn-biz {
+      background: linear-gradient(135deg, #ff9900, #ff5500);
+    }
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+    .btn-call {
+      background: linear-gradient(135deg, #007bb5, #005580);
+      flex: 1;
+    }
+    .btn-wa {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Background Camera Container -->
+  <div id="container"></div>
+
+  <!-- 2. Aapki Asli Video (Iska naam 'myvideo.mp4' hona chahiye aapke GitHub par) -->
+  <video id="card-video" src="./myvideo.mp4" preload="auto" loop playsinline></video>
+
+  <!-- 3. ACTIONS PANEL: Video se bilkul alag, niche saaf-saaf likhe hue buttons -->
+  <div class="button-container">
     
-    <style>
-      /* Poori screen ko transparent aur clean rakhne ke liye */
-      body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: transparent; }
-      /* Faltu loading ya blue screens ko block karne ke liye */
-      .a-canvas { background-color: transparent !important; }
-    </style>
-  </head>
-  <body>
+    <!-- Business Opportunity Button -->
+    <a href="https://my-profile-10.blogspot.com/p/business-oppertunity.html" target="_top" class="btn btn-biz">
+      BUSINESS OPPORTUNITY
+    </a>
 
-    <!-- UI ke saare faltu elements (loading aur VR buttons) band kar diye hain -->
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind; uiLoading: no; uiError: no;" cursor="rayOrigin: mouse" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-      
-      <a-assets>
-        <!-- 1. Aapki Video -->
-        <video id="card-video" src="./myvideo.mp4" preload="auto" loop="true" playsinline></video>
-        
-        <!-- 2. Buttons ke Icons -->
-        <img id="biz-icon" src="https://cdn-icons-png.flaticon.com/512/3061/3061341.png">
-        <img id="call-icon" src="https://cdn-icons-png.flaticon.com/512/3616/3616215.png">
-        <img id="wa-icon" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png">
-      </a-assets>
+    <!-- Call aur WhatsApp Bagal-Bagal mein -->
+    <div class="btn-row">
+      <a href="tel:+918129848820" target="_top" class="btn btn-call">
+        CALL ME
+      </a>
+      <a href="https://wa.me/918129848820?text=Hi,%20I%20am%20interested%20in%20your%20business." target="_top" class="btn btn-wa">
+        WHATSAPP
+      </a>
+    </div>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  </div>
 
-      <!-- Target Zone -->
-      <a-entity id="my-target" mindar-image-target="targetIndex: 0">
-        
-        <!-- Aapki Video -->
-        <a-video src="#card-video" width="1" height="0.56" position="0 0.2 0"></a-video>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const container = document.querySelector("#container");
+      const videoElement = document.querySelector("#card-video");
 
-        <!-- Buttons -->
-        <a-image id="btn-biz" src="#biz-icon" width="0.8" height="0.18" position="0 -0.25 0.1" class="clickable"></a-image>
-        <a-image id="btn-call" src="#call-icon" width="0.35" height="0.15" position="-0.22 -0.45 0.1" class="clickable"></a-image>
-        <a-image id="btn-wa" src="#wa-icon" width="0.35" height="0.15" position="0.22 -0.45 0.1" class="clickable"></a-image>
-
-      </a-entity>
-    </a-scene>
-
-    <script>
-      const targetEntity = document.querySelector('#my-target');
-      const videoElement = document.querySelector('#card-video');
-
-      // Scan Control logic
-      targetEntity.addEventListener("targetFound", () => { videoElement.play(); });
-      targetEntity.addEventListener("targetLost", () => { videoElement.pause(); });
-
-      // Click Actions
-      document.querySelector('#btn-biz').addEventListener("click", () => {
-        window.open("https://my-profile-10.blogspot.com/p/business-oppertunity.html", "_top");
+      // MindAR ko normal tarike se chalu karna bina kisi loading screen ke
+      const mindarThree = new mindString.MindARImage({
+        container: container,
+        imageTargetSrc: './targets.mind',
+        uiLoading: "no",
+        uiError: "no"
       });
 
-      document.querySelector('#btn-call').addEventListener("click", () => {
-        window.open("tel:+918129848820", "_top");
+      // AR Engine ko start karna
+      await mindarThree.start();
+
+      // Jab card scan hoga (Target Found)
+      mindarThree.on("targetFound", () => {
+        videoElement.style.display = "block"; // Video dikhao
+        videoElement.play();                  // Video chalao
       });
 
-      document.querySelector('#btn-wa').addEventListener("click", () => {
-        window.open("https://wa.me/918129848820?text=Hi,%20I%20am%20interested%20in%20your%20business.", "_top");
+      // Jab card camera se hat jayega (Target Lost)
+      mindarThree.on("targetLost", () => {
+        videoElement.pause();                 // Video rok do
+        videoElement.style.display = "none";  // Video chhupa do
       });
     </script>
-  </body>
+    
+    <!-- MindAR controller injection backend fallback script -->
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-three.prod.js"></script>
+</body>
 </html>
