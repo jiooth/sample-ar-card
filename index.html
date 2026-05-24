@@ -25,25 +25,70 @@
   <body>
 
     <div class="loading-screen" id="loading">
-      <p>Camera chalu ho raha hai...</p>
-      <p style="font-size: 12px; color: #aaa;">Kripya camera ko allow karein</p>
+      <p>AR Camera chalu ho raha hai...</p>
     </div>
 
-    <!-- Humne targets.mind file ko yahan link kiya hai -->
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <!-- rayOrigin: mouse joda hai taaki hawa wale buttons par click/touch kaam kare -->
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" cursor="rayOrigin: mouse" graphic-only color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      
+      <a-assets>
+        <!-- 1. Aapki Video -->
+        <video id="card-video" src="./myvideo.mp4" preload="auto" loop="true" playsinline></video>
+        
+        <!-- 2. Buttons ke Icons (Internet se direct high-quality icons) -->
+        <img id="biz-icon" src="https://cdn-icons-png.flaticon.com/512/3061/3061341.png">
+        <img id="call-icon" src="https://cdn-icons-png.flaticon.com/512/3616/3616215.png">
+        <img id="wa-icon" src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png">
+      </a-assets>
+
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- Target Zone: Jab photo scan hogi, toh iske andar ka blue box dikhega -->
+      <!-- Target Zone -->
       <a-entity id="my-target" mindar-image-target="targetIndex: 0">
-        <!-- Testing ke liye ek simple Blue box hawa mein dikhega -->
-        <a-box position="0 0 0" scale="0.5 0.5 0.5" color="blue"></a-box>
+        
+        <!-- Aapki Video (Center mein) -->
+        <a-video src="#card-video" width="1" height="0.56" position="0 0.2 0"></a-video>
+
+        <!-- [BUTTON 1]: Business Opportunity Button (Video ke thik neeche, thoda bada) -->
+        <a-image id="btn-biz" src="#biz-icon" width="0.8" height="0.18" position="0 -0.25 0.1" class="clickable"></a-image>
+
+        <!-- [BUTTON 2]: Call Me Button (Neeche Left side mein) -->
+        <a-image id="btn-call" src="#call-icon" width="0.35" height="0.15" position="-0.22 -0.45 0.1" class="clickable"></a-image>
+
+        <!-- [BUTTON 3]: WhatsApp Button (Neeche Right side mein) -->
+        <a-image id="btn-wa" src="#wa-icon" width="0.35" height="0.15" position="0.22 -0.45 0.1" class="clickable"></a-image>
+
       </a-entity>
     </a-scene>
 
     <script>
-      // Jaise hi scene load ho jayega, loading text gayab ho jayega
+      const targetEntity = document.querySelector('#my-target');
+      const videoElement = document.querySelector('#card-video');
+
+      // Loading screen hatane ke liye
       document.querySelector('a-scene').addEventListener("ARReady", () => {
         document.getElementById('loading').style.display = 'none';
+      });
+
+      // Video Control logic
+      targetEntity.addEventListener("targetFound", () => { videoElement.play(); });
+      targetEntity.addEventListener("targetLost", () => { videoElement.pause(); });
+
+      // --- BUTTONS KE CLICK ACTIONS ---
+
+      // 1. Business Opportunity Link
+      document.querySelector('#btn-biz').addEventListener("click", () => {
+        window.open("https://my-profile-10.blogspot.com/p/business-oppertunity.html", "_top");
+      });
+
+      // 2. Direct Call Action
+      document.querySelector('#btn-call').addEventListener("click", () => {
+        window.open("tel:+918129848820", "_top");
+      });
+
+      // 3. Direct WhatsApp Chat Action
+      document.querySelector('#btn-wa').addEventListener("click", () => {
+        window.open("https://wa.me/918129848820?text=Hi,%20I%20am%20interested%20in%20your%20business.", "_top");
       });
     </script>
   </body>
