@@ -1,149 +1,109 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>AR Business Card</title>
-  
-  <!-- Solid Camera Libraries -->
-  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
-  
-  <style>
-    /* Full screen setup, koi scrollbar nahi, koi faltu blue color nahi */
-    body, html {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      background-color: #000;
-    }
-
-    /* 3D AR Canvas ko background mein rakhne ke liye */
-    a-scene {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
-
-    /* Faltu blue screen hatane ke liye */
-    .a-canvas {
-      background-color: transparent !important;
-    }
-
-    /* ACTIONS PANEL: Isko screen ke edge se safe zone mein fix kiya hai */
-    .button-container {
-      position: fixed;
-      bottom: 25px; /* Niche se thoda upar taaki har phone par saaf dikhe */
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 360px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 99999; /* Yeh camera ke upar dikhega aur touch kaam karega */
-    }
-
-    /* Premium Button Styles */
-    .btn {
-      width: 100%;
-      padding: 14px 0;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      color: white;
-      text-align: center;
-      text-decoration: none;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-      cursor: pointer;
-      display: block;
-      transition: transform 0.1s;
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    /* Har button ka apna alag, dynamic color */
-    .btn-biz {
-      background: linear-gradient(135deg, #ff9900, #ff5500);
-    }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- WebVR/AR aur MindAR Libraries -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-    }
-    
-    .btn-call {
-      background: linear-gradient(135deg, #007bb5, #005580);
-      flex: 1;
-    }
-    
-    .btn-wa {
-      background: linear-gradient(135deg, #25D366, #128C7E);
-      flex: 1;
-    }
-  </style>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        /* Overlay UI Buttons Container */
+        #ui-container {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 85%;
+            max-width: 320px;
+            font-family: Arial, sans-serif;
+        }
+        /* Action Buttons Styling */
+        .ar-btn {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .ar-btn:active {
+            transform: scale(0.95);
+        }
+        /* Specific Button Colors */
+        .biz-btn {
+            background: linear-gradient(135deg, #ff9900, #ff5500);
+        }
+        .call-btn {
+            background: linear-gradient(135deg, #007bb5, #005580);
+        }
+        .wa-btn {
+            background: linear-gradient(135deg, #25D366, #075E54);
+        }
+    </style>
 </head>
 <body>
 
-  <!-- 1. REAL NORMAL HTML BUTTONS (Camera se bilkul alag aur upar) -->
-  <div class="button-container">
-    <!-- Business Opportunity Button -->
-    <a href="https://my-profile-10.blogspot.com/p/business-oppertunity.html" target="_top" class="btn btn-biz">
-      BUSINESS OPPORTUNITY
-    </a>
+    <!-- AR Scene Setup (Yahan targets.mind file ka sahi path hona chahiye) -->
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; filterMinCF:0.001; filterBeta:0.01;" 
+             color-space="sRGB" 
+             renderer="colorManagement: true, physicallyCorrectLights" 
+             vr-mode-ui="enabled: false" 
+             device-orientation-permission-ui="enabled: false">
+        
+        <a-assets>
+            <!-- Aapki video file aur uski settings -->
+            <video id="card-video" src="./myvideo.mp4" preload="auto" loop="true" playsinline webkit-playsinline muted></video>
+        </a-assets>
 
-    <!-- Call aur WhatsApp Bagal-Bagal mein -->
-    <div class="btn-row">
-      <a href="tel:+918129848820" target="_top" class="btn btn-call">
-        CALL ME
-      </a>
-      <a href="https://wa.me/918129848820?text=Hi,%20I%20am%20interested%20in%20your%20business." target="_top" class="btn btn-wa">
-        WHATSAPP
-      </a>
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <!-- Target Index 0 (Jab camera card ko scan karega) -->
+        <a-entity mindar-image-target="targetIndex: 0">
+            <!-- Video Plane: Yeh card ke upar 3D me dikhega -->
+            <a-video src="#card-video" position="0 0 0" height="0.55" width="1" rotation="0 0 0"></a-video>
+        </a-entity>
+    </a-scene>
+
+    <!-- Screen ke upar dikhne wale Buttons -->
+    <div id="ui-container">
+        <a href="https://my-profile-10.blogspot.com/p/business-oppertunity.html" target="_blank" class="ar-btn biz-btn">
+            💼 BUSINESS OPPERTUNITY
+        </a>
+        <a href="tel:+918129848820" id="call-link" class="ar-btn call-btn">
+            📞 CALL ME
+        </a>
+        <a href="https://wa.me/918129848820?text=Hi,%20I%20scanned%20your%20AR%20Business%20Card." target="_blank" id="wa-link" class="ar-btn wa-btn">
+            💬 WHATSAPP
+        </a>
     </div>
-  </div>
 
-  <!-- 2. SOLID AR CAMERA ENGINE -->
-  <!-- uiLoading: no; uiError: no karne se woh white box hamesha ke liye gayab ho jayega -->
-  <a-scene mindar-image="imageTargetSrc: ./targets.mind; uiLoading: no; uiError: no;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-    
-    <a-assets>
-      <!-- Aapki Asli Video (Iska naam 'myvideo.mp4' hona chahiye aapke GitHub par) -->
-      <video id="card-video" src="./myvideo.mp4" preload="auto" loop="true" playsinline></video>
-    </a-assets>
+    <script>
+        // Video Auto-play logic jab target scan ho jaye
+        const sceneEl = document.querySelector('a-scene');
+        const videoEl = document.querySelector('#card-video');
+        const targetEl = document.querySelector('[mindar-image-target]');
 
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        targetEl.addEventListener("targetFound", event => {
+            console.log("Target found! Playing video...");
+            videoEl.play();
+        });
 
-    <!-- Target Zone: Scan hote hi sirf video dikhegi -->
-    <a-entity id="my-target" mindar-image-target="targetIndex: 0">
-      <!-- Video position 0 0 0 par hai, buttons upar HTML mein hain -->
-      <a-video src="#card-video" width="1" height="0.56" position="0 0 0"></a-video>
-    </a-entity>
-  </a-scene>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const targetEntity = document.querySelector('#my-target');
-      const videoElement = document.querySelector('#card-video');
-
-      // Video play/pause logic on scan
-      targetEntity.addEventListener("targetFound", () => {
-        videoElement.play();
-      });
-      targetEntity.addEventListener("targetLost", () => {
-        videoElement.pause();
-      });
+        targetEl.addEventListener("targetLost", event => {
+            console.log("Target lost! Pausing video...");
+            videoEl.pause();
+        });
     </script>
 </body>
 </html>
