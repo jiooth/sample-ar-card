@@ -1,105 +1,139 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <!-- Solid Camera Libraries -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>AR Business Card</title>
+  
+  <!-- Solid Camera Libraries -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
+  
+  <style>
+    /* Full screen setup, koi scrollbar nahi, koi faltu blue color nahi */
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #000;
+    }
+
+    /* 3D AR Canvas ko background mein rakhne ke liye */
+    a-scene {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Faltu blue screen hatane ke liye */
+    .a-canvas {
+      background-color: transparent !important;
+    }
+
+    /* ACTIONS PANEL: Isko screen ke edge se safe zone mein fix kiya hai */
+    .button-container {
+      position: fixed;
+      bottom: 25px; /* Niche se thoda upar taaki har phone par saaf dikhe */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 360px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 99999; /* Yeh camera ke upar dikhega aur touch kaam karega */
+    }
+
+    /* Premium Button Styles */
+    .btn {
+      width: 100%;
+      padding: 14px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      cursor: pointer;
+      display: block;
+      transition: transform 0.1s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Har button ka apna alag, dynamic color */
+    .btn-biz {
+      background: linear-gradient(135deg, #ff9900, #ff5500);
+    }
     
-    <style>
-      body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: Arial, sans-serif; }
-      
-      /* 3D AR Canvas ko background mein rakhne ke liye */
-      a-scene { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+    
+    .btn-call {
+      background: linear-gradient(135deg, #007bb5, #005580);
+      flex: 1;
+    }
+    
+    .btn-wa {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
 
-      /* BUTTONS PANEL: Isko screen ke thoda upar set kiya hai taaki neeche se bahar na jaye */
-      .button-container {
-        position: fixed;
-        bottom: 40px; /* Isko badha kar upar kar diya hai */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 360px;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        z-index: 99999; /* Yeh hamesha camera ke upar dikhega aur touch kaam karega */
-      }
+  <!-- 1. REAL NORMAL HTML BUTTONS (Camera se bilkul alag aur upar) -->
+  <div class="button-container">
+    <!-- Business Opportunity Button -->
+    <a href="https://my-profile-10.blogspot.com/p/business-oppertunity.html" target="_top" class="btn btn-biz">
+      BUSINESS OPPORTUNITY
+    </a>
 
-      /* Premium Button Styles */
-      .btn {
-        width: 100%;
-        padding: 12px 0;
-        border: none;
-        border-radius: 8px;
-        font-size: 15px;
-        font-weight: bold;
-        color: white;
-        text-align: center;
-        text-decoration: none;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-        cursor: pointer;
-        display: block;
-      }
-
-      .btn-biz {
-        background: linear-gradient(135deg, #ff9900, #ff5500);
-      }
-      
-      .btn-row {
-        display: flex;
-        gap: 10px;
-        width: 100%;
-      }
-      
-      .btn-call {
-        background: linear-gradient(135deg, #007bb5, #005580);
-        flex: 1;
-      }
-      
-      .btn-wa {
-        background: linear-gradient(135deg, #25D366, #128C7E);
-        flex: 1;
-      }
-    </style>
-  </head>
-  <body>
-
-    <!-- 1. REAL NORMAL HTML BUTTONS (Camera se bilkul alag aur upar) -->
-    <div class="button-container">
-      <!-- Business Opportunity Link -->
-      <a href="https://my-profile-10.blogspot.com/p/business-oppertunity.html" target="_top" class="btn btn-biz">
-        BUSINESS OPPORTUNITY
+    <!-- Call aur WhatsApp Bagal-Bagal mein -->
+    <div class="btn-row">
+      <a href="tel:+918129848820" target="_top" class="btn btn-call">
+        CALL ME
       </a>
-
-      <!-- Call aur WhatsApp Bagal-Bagal mein -->
-      <div class="btn-row">
-        <a href="tel:+918129848820" target="_top" class="btn btn-call">
-          CALL ME
-        </a>
-        <a href="https://wa.me/918129848820?text=Hi,%20I%20am%20interested%20in%20your%20business." target="_top" class="btn btn-wa">
-          WHATSAPP
-        </a>
-      </div>
+      <a href="https://wa.me/918129848820?text=Hi,%20I%20am%20interested%20in%20your%20business." target="_top" class="btn btn-wa">
+        WHATSAPP
+      </a>
     </div>
+  </div>
 
-    <!-- 2. SOLID AR CAMERA ENGINE -->
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind; uiLoading: no; uiError: no;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-      
-      <a-assets>
-        <video id="card-video" src="./myvideo.mp4" preload="auto" loop="true" playsinline></video>
-      </a-assets>
+  <!-- 2. SOLID AR CAMERA ENGINE -->
+  <!-- uiLoading: no; uiError: no karne se woh white box hamesha ke liye gayab ho jayega -->
+  <a-scene mindar-image="imageTargetSrc: ./targets.mind; uiLoading: no; uiError: no;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    
+    <a-assets>
+      <!-- Aapki Asli Video (Iska naam 'myvideo.mp4' hona chahiye aapke GitHub par) -->
+      <video id="card-video" src="./myvideo.mp4" preload="auto" loop="true" playsinline></video>
+    </a-assets>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- Target Zone: Scan hote hi sirf video dikhegi, buttons humne upar HTML mein daal diye hain -->
-      <a-entity id="my-target" mindar-image-target="targetIndex: 0">
-        <a-video src="#card-video" width="1" height="0.56" position="0 0 0"></a-video>
-      </a-entity>
-    </a-scene>
+    <!-- Target Zone: Scan hote hi sirf video dikhegi -->
+    <a-entity id="my-target" mindar-image-target="targetIndex: 0">
+      <!-- Video position 0 0 0 par hai, buttons upar HTML mein hain -->
+      <a-video src="#card-video" width="1" height="0.56" position="0 0 0"></a-video>
+    </a-entity>
+  </a-scene>
 
-    <script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
       const targetEntity = document.querySelector('#my-target');
       const videoElement = document.querySelector('#card-video');
 
@@ -111,5 +145,5 @@
         videoElement.pause();
       });
     </script>
-  </body>
+</body>
 </html>
