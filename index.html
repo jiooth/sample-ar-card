@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
+    
+    <style>
+      body { margin: 0; overflow: hidden; }
+      .loading-screen {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        background: rgba(0,0,0,0.8);
+        padding: 20px;
+        border-radius: 10px;
+        font-family: sans-serif;
+        z-index: 999;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="loading-screen" id="loading">
+      <p>Camera chalu ho raha hai...</p>
+      <p style="font-size: 12px; color: #aaa;">Kripya camera ko allow karein</p>
+    </div>
+
+    <!-- Humne targets.mind file ko yahan link kiya hai -->
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <!-- Target Zone: Jab photo scan hogi, toh iske andar ka blue box dikhega -->
+      <a-entity id="my-target" mindar-image-target="targetIndex: 0">
+        <!-- Testing ke liye ek simple Blue box hawa mein dikhega -->
+        <a-box position="0 0 0" scale="0.5 0.5 0.5" color="blue"></a-box>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      // Jaise hi scene load ho jayega, loading text gayab ho jayega
+      document.querySelector('a-scene').addEventListener("ARReady", () => {
+        document.getElementById('loading').style.display = 'none';
+      });
+    </script>
+  </body>
+</html>
